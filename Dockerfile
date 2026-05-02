@@ -22,7 +22,7 @@ RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 
 WORKDIR /var/www/html
 
-COPY bludit/ /var/www/html/
+COPY /var/www/html/
 
 RUN chown -R www-data:www-data /var/www/html
 
