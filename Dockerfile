@@ -22,7 +22,9 @@ RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 
 WORKDIR /var/www/html
 
-COPY /var/www/html/
+COPY . /var/www/html/
+
+RUN rm -f /var/www/html/Dockerfile
 
 RUN chown -R www-data:www-data /var/www/html
 
