@@ -16,9 +16,20 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers
 
-RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+
+RUN printf '%s\n' \
+    '<VirtualHost *:80>' \
+    '    DocumentRoot /var/www/html' \
+    '    <Directory /var/www/html>' \
+    '        Options Indexes FollowSymLinks' \
+    '        AllowOverride All' \
+    '        Require all granted' \
+    '    </Directory>' \
+    '</VirtualHost>' \
+    > /etc/apache2/sites-available/000-default.conf
 
 WORKDIR /var/www/html
 
@@ -26,6 +37,9 @@ COPY . /var/www/html/
 
 RUN rm -f /var/www/html/Dockerfile
 
-RUN chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www/html \
+    && find /var/www/html -type d -exec chmod 755 {} \; \
+    && find /var/www/html -type f -exec chmod 644 {} \; \
+    && chmod -R 775 /var/www/html/bl-content || true
 
 EXPOSE 80
