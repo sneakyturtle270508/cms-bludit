@@ -21,8 +21,11 @@ RUN a2enmod rewrite headers
 RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
 RUN printf '%s\n' \
+    'ServerName localhost' \
     '<VirtualHost *:80>' \
     '    DocumentRoot /var/www/html' \
+    '    SetEnvIf X-Forwarded-Proto "https" HTTPS=on' \
+    '    SetEnvIf X-Forwarded-Ssl "on" HTTPS=on' \
     '    <Directory /var/www/html>' \
     '        Options Indexes FollowSymLinks' \
     '        AllowOverride All' \
